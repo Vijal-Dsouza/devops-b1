@@ -1,0 +1,33 @@
+name: deployment for lambda
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout repo
+              uses: actions/checkout@v4
+           
+            - name: configure aws credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ secrets.AWS_REGION }}
+            
+            - name: zipping file
+              run: zip -r lambda_function.py.zip lambda_function.py
+
+            - name: uploading to s3
+              run: aws s3 cp lambda_function.py.zip s3://devops-b1-vijal/
+
+            - name: updating lambda code
+              run: |
+                aws lambda update-function-code \
+                --function-name devops-b1-lambda \
+                --s3-bucket devops-b1-vijal \
+                --s3-key lambda_function.py.zip
+              
