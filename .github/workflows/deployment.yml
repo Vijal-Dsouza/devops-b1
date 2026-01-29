@@ -27,7 +27,7 @@ jobs:
             - name: updating lambda code
               run: |
                 aws lambda update-function-code \
-                --function-name devops-b1-lambda \
+                --function-name devops-b1 \
                 --s3-bucket devops-b1-vijal \
                 --s3-key lambda_function.py.zip
               
